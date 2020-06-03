@@ -14,6 +14,9 @@ namespace RPG
         private int speed = 200;
         private Dir direction = Dir.Down;
         private bool isMoving = false;
+        public AnimatedSprite anim;
+        public AnimatedSprite[] animations = new AnimatedSprite[4];
+
 
         // this may need changing
         public int Health { get; set; } = 3;
@@ -40,6 +43,15 @@ namespace RPG
             KeyboardState kstate = Keyboard.GetState();
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            // set the animation based on direction player is facing
+            anim = animations[(int)direction];
+
+            // this cycles through the player animations
+            if (isMoving)
+                anim.Update(gameTime);
+            else
+                anim.setFrame(1); // return animation to standing still frame
+                
             // this means every frame the player stops moving
             isMoving = false;
             // however if the keys are held, player will move
@@ -63,8 +75,8 @@ namespace RPG
                 direction = Dir.Down;
                 isMoving = true;
             }
-           
-
+            
+            // movement speed
             if (isMoving)
             {
                 switch (direction)

@@ -7,9 +7,9 @@ namespace RPG
     // make it available across the game
     enum Dir
     {
-        Down, 
-        Up, 
-        Left, 
+        Down,
+        Up,
+        Left,
         Right
     }
     
@@ -83,7 +83,12 @@ namespace RPG
             heart_Sprite = Content.Load<Texture2D>("Misc/heart");
             bullet_Sprite = Content.Load<Texture2D>("Misc/bullet");
 
-           
+            // player direction animation into array
+            player.animations[0] = new AnimatedSprite(playerDown, 1, 4);
+            player.animations[1] = new AnimatedSprite(playerUp, 1, 4);
+            player.animations[2] = new AnimatedSprite(playerLeft, 1, 4);
+            player.animations[3] = new AnimatedSprite(playerRight, 1, 4);
+
         }
 
       
@@ -110,9 +115,10 @@ namespace RPG
         {
             GraphicsDevice.Clear(Color.ForestGreen);
 
-            spriteBatch.Begin();
+            // goes outside as begin/end exists in the anim.draw method
+            player.anim.Draw(spriteBatch, new Vector2(player.Position.X - 48, player.Position.Y - 48));
 
-            spriteBatch.Draw(player_Sprite, player.Position, Color.White);
+            spriteBatch.Begin();
 
             spriteBatch.End();
           
