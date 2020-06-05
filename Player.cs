@@ -10,23 +10,39 @@ namespace RPG
 {
     class Player
     {
+        // fields
         private Vector2 position = new Vector2(100, 100);
         private int speed = 200;
         private Dir direction = Dir.Down;
         private bool isMoving = false;
         public AnimatedSprite anim;
-        public AnimatedSprite[] animations = new AnimatedSprite[4];
+        public AnimatedSprite[] animations = new AnimatedSprite[4]; // 4 to hold the 4 enums
+        private KeyboardState kStateOld = Keyboard.GetState();
+        public int health = 3;
+        private int radius = 20;
+        private float healthTimer = 0f;
 
+        // properties
+        public float HealthTimer
+        {
+            get { return healthTimer; }
+            set { healthTimer = value; }
+        }
 
-        // this may need changing
-        public int Health { get; set; } = 3;
-
+      
+        public int Radius
+        {
+            get { return radius; }
+        }
+        
+        public int Health
+        {
+            get { return health; }
+            set { health = value; }
+        }
         // using a set for a Vector2 is tricker and is done below 
         public Vector2 Position {
-            get
-            {
-                return position;
-            }
+            get{ return position; }
         }
         public void setX(float newX)
         {
@@ -37,11 +53,18 @@ namespace RPG
             position.Y = newY;
         }
 
+        // Methods
         // player movement
         public void Update(GameTime gameTime)
         {
             KeyboardState kstate = Keyboard.GetState();
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            // so players health doesnt decline too fast when hit
+            if (healthTimer > 0)
+            {
+                healthTimer -= dt;
+            }
 
             // set the animation based on direction player is facing
             anim = animations[(int)direction];
@@ -79,24 +102,50 @@ namespace RPG
             // movement speed
             if (isMoving)
             {
+                Vector2 tempPos = position; // for obstable collision
+
                 switch (direction)
                 {
                     case Dir.Down:
-                        position.Y += speed * dt;
+                        tempPos.Y += speed * dt; // put next move into variable and pass to Obstacle.didCollide
+                        if (!Obstacle.didCollide(tempPos, radius)) // if collision is NOT made
+                        {
+                            position.Y += speed * dt; // do the actual movement
+                        }
                         break;
                     case Dir.Up:
-                        position.Y -= speed * dt;
+                        tempPos.Y -= speed * dt;
+                        if (!Obstacle.didCollide(tempPos, radius))
+                        {
+                            position.Y -= speed * dt;
+                        }
                         break;
                     case Dir.Left:
-                        position.X -= speed * dt;
+                        tempPos.X -= speed * dt;
+                        if (!Obstacle.didCollide(tempPos, radius))
+                        {
+                            position.X -= speed * dt;
+                        }
                         break;
-                    case Dir.Right:
-                        position.X += speed * dt;
+                        case Dir.Right:
+                        tempPos.X += speed * dt;
+                        if (!Obstacle.didCollide(tempPos, radius))
+                        {
+                            position.X += speed * dt;
+                        }
                         break;
                     default:
                         break;
                 }
             }
+
+            // when spacebar is pressed, create ONE projectile
+            if (kstate.IsKeyDown(Keys.Space) && kStateOld.IsKeyUp(Keys.Space))
+            {
+                Projectile.projectiles.Add(new Projectile(position, direction));
+            }
+
+            kStateOld = kstate;
         }
     }
 }
