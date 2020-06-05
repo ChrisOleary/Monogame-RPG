@@ -10,7 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
-/reference:..\packages\MonoGame.Extended.Content.Pipeline.3.7.0\lib\netstandard2.0\MonoGame.Extended.Content.Pipeline.dll
+/reference:..\packages\MonoGame.Extended.Content.Pipeline.1.0.617\tools\MonoGame.Extended.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -49,6 +49,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Misc/bullet.png
+
+#begin Misc/gameMap.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:Misc/gameMap.tmx
 
 #begin Misc/heart.png
 /importer:TextureImporter

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Tiled;
+using MonoGame.Extended.Tiled.Graphics;
 
 namespace RPG
 {
@@ -37,6 +39,10 @@ namespace RPG
         Texture2D heart_Sprite;
         Texture2D bullet_Sprite;
 
+        // map stuff
+        TiledMapRenderer mapRenderer;
+        TiledMap myMap;
+
         Player player = new Player();
 
 
@@ -53,7 +59,7 @@ namespace RPG
        
         protected override void Initialize()
         {
-           
+            mapRenderer = new TiledMapRenderer(GraphicsDevice);
 
             base.Initialize();
         }
@@ -88,6 +94,9 @@ namespace RPG
             player.animations[1] = new AnimatedSprite(playerUp, 1, 4);
             player.animations[2] = new AnimatedSprite(playerLeft, 1, 4);
             player.animations[3] = new AnimatedSprite(playerRight, 1, 4);
+
+            // Load map xmb
+            myMap = Content.Load<TiledMap>("Misc/gameMap");
 
             // comment out while not in use
             Enemy.enemies.Add(new Snake(new Vector2(100, 400)));
@@ -176,6 +185,9 @@ namespace RPG
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.ForestGreen);
+
+            // MAP
+            mapRenderer.Draw(myMap);
 
             // PLAYER goes outside as begin/end exists in the anim.draw method
             if (player.Health > 0) // is health is not 0 then draw player
