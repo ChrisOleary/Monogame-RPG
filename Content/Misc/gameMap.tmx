@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.3.5" orientation="orthogonal" renderorder="right-down" width="40" height="28" tilewidth="64" tileheight="64" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.2" tiledversion="1.3.5" orientation="orthogonal" renderorder="right-down" width="40" height="28" tilewidth="64" tileheight="64" infinite="0" nextlayerid="4" nextobjectid="13">
  <tileset firstgid="1" name="RPG_Tiles" tilewidth="64" tileheight="64" tilecount="260" columns="20">
   <image source="rpgTiles.png" width="1280" height="832"/>
  </tileset>
@@ -35,4 +35,68 @@
 22,22,22,22,22,22,22,22,22,22,22,22,22,22,26,27,27,27,28,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22
 </data>
  </layer>
+ <objectgroup id="2" name="enemies">
+  <object id="1" x="400.656" y="620.371" width="71.0842" height="58.1598">
+   <properties>
+    <property name="type" value="Snake"/>
+   </properties>
+  </object>
+  <object id="2" x="1179.35" y="652.682" width="71.0842" height="80.7775">
+   <properties>
+    <property name="type" value="Eye"/>
+   </properties>
+  </object>
+  <object id="3" x="313.417" y="1227.82" width="67.8531" height="67.8531">
+   <properties>
+    <property name="type" value="Snake"/>
+   </properties>
+  </object>
+  <object id="4" x="1221.36" y="1298.9" width="74.3153" height="77.5464">
+   <properties>
+    <property name="type" value="Eye"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="3" name="obstacles">
+  <object id="5" x="798.082" y="387.732" width="64.622" height="51.6976">
+   <properties>
+    <property name="type" value="Tree"/>
+   </properties>
+  </object>
+  <object id="6" x="87.2397" y="268.181" width="45.2354" height="58.1598">
+   <properties>
+    <property name="type" value="Bush"/>
+   </properties>
+  </object>
+  <object id="7" x="135.706" y="901.477" width="74.3153" height="77.5464">
+   <properties>
+    <property name="type" value="Bush"/>
+   </properties>
+  </object>
+  <object id="8" x="759.308" y="962.868" width="113.088" height="106.626">
+   <properties>
+    <property name="type" value="Tree"/>
+   </properties>
+  </object>
+  <object id="9" x="148.631" y="1292.44" width="74.3153" height="71.0842">
+   <properties>
+    <property name="type" value="Tree"/>
+   </properties>
+  </object>
+  <object id="10" x="1153.5" y="730.228" width="84.0086" height="64.622">
+   <properties>
+    <property name="type" value="Bush"/>
+   </properties>
+  </object>
+  <object id="11" x="1538" y="345.728" width="54.9287" height="71.0842">
+   <properties>
+    <property name="type" value="Tree"/>
+   </properties>
+  </object>
+  <object id="12" x="1098.57" y="1221.36" width="74.3153" height="84.0086">
+   <properties>
+    <property name="type" value="Bush"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

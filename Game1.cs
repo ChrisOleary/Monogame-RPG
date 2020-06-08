@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Graphics;
+using MonoGame.Extended; // camera
+using Microsoft.Xna.Framework.Audio; // sounds FX
+using Microsoft.Xna.Framework.Media; // Music
 
 namespace RPG
 {
@@ -13,6 +16,13 @@ namespace RPG
         Up,
         Left,
         Right
+    }
+
+    public static class MySounds
+    {
+        public static SoundEffect projectileSound;
+        public static Song bgMusic;
+
     }
     
     public class Game1 : Game
@@ -45,6 +55,9 @@ namespace RPG
 
         Player player = new Player();
 
+        // camera
+        Camera2D cam;
+
 
         public Game1()
         {
@@ -59,7 +72,11 @@ namespace RPG
        
         protected override void Initialize()
         {
+            // TiledMap
             mapRenderer = new TiledMapRenderer(GraphicsDevice);
+
+            // Camera
+            cam = new Camera2D(GraphicsDevice);
 
             base.Initialize();
         }
@@ -98,23 +115,57 @@ namespace RPG
             // Load map xmb
             myMap = Content.Load<TiledMap>("Misc/gameMap");
 
-            // comment out while not in use
-            Enemy.enemies.Add(new Snake(new Vector2(100, 400)));
-            Enemy.enemies.Add(new Eye(new Vector2(100, 600)));
+            // Sound FX
+            MySounds.projectileSound = Content.Load<SoundEffect>("Sounds/blip");
+            MySounds.bgMusic = Content.Load<Song>("Sounds/original");
+            MediaPlayer.Play(MySounds.bgMusic);
 
-            Obstacle.obstacles.Add(new Bush(new Vector2(200, 200)));
-            Obstacle.obstacles.Add(new Tree(new Vector2(500, 300)));
+            // comment out while not in use
+            //Enemy.enemies.Add(new Snake(new Vector2(100, 400)));
+            //Enemy.enemies.Add(new Eye(new Vector2(100, 600)));
+
+            // put enemies from TiledMap in array 
+            TiledMapObject[] allEnemies = myMap.GetLayer<TiledMapObjectLayer>("enemies").Objects;
+            foreach (var en in allEnemies)
+            {
+                // this retieves from TiledMap, the value from each custom property we added manually, eg Snake or Eye
+                string type;
+                en.Properties.TryGetValue("type", out type);
+                if (type == "Snake")
+                {
+                    Enemy.enemies.Add(new Snake(en.Position)); // en.Position is from TiledMap
+                }
+                else if (type == "Eye")
+                {
+                    Enemy.enemies.Add(new Eye(en.Position));
+                }
+            }
+
+            // put obstacles in using TiledMap
+            TiledMapObject[] allObstacles = myMap.GetLayer<TiledMapObjectLayer>("obstacles").Objects;
+            foreach (var obj in allObstacles)
+            {
+                // this retieves from TiledMap, the value from each custom property we added manually, eg Tree or Bush
+                string type;
+                obj.Properties.TryGetValue("type", out type);
+                if (type == "Tree")
+                {
+                    Obstacle.obstacles.Add(new Tree(obj.Position)); // en.Position is from TiledMap
+                }
+                else if (type == "Bush")
+                {
+                    Obstacle.obstacles.Add(new Bush(obj.Position));
+                }
+            }
+
 
         }
 
       
         protected override void UnloadContent()
-        {
-            
+        { 
         }
 
-        
-      
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -125,8 +176,36 @@ namespace RPG
             // player movement
             if (player.Health > 0)
             {
-                player.Update(gameTime);
+                player.Update(gameTime, myMap.WidthInPixels, myMap.HeightInPixels);
             }
+
+            // for CAMERA to follow player but to stop when you get near the edge
+            float tempX = player.Position.X;
+            float tempY = player.Position.Y;
+            int camW = graphics.PreferredBackBufferWidth; // LEFT side of the map
+            int camH = graphics.PreferredBackBufferHeight; // TOP side of the map
+            int mapW = myMap.WidthInPixels; // RIGHT side of the map
+            int mapH = myMap.HeightInPixels; // BOTTOM side of the map
+
+            if (tempX < camW / 2) // if the player is too close to the LEFT side of the screen edge
+            {
+                tempX = camW / 2; // set cam.LookAt to be graphics.PreferredBackBufferWidth
+            }
+            if (tempY < camH / 2) // if the player is too close to the TOP side of the screen edge
+            {
+                tempY = camH / 2; // set cam.LookAt to be graphics.PreferredBackBufferHeight
+            }
+            if (tempX > (mapW - (camW/2))) // RIGHT
+            {
+                tempX = mapW - (camW / 2); 
+            }
+            if (tempY > (mapH - (camH / 2))) // RIGHT
+            {
+                tempY = mapH - (camH / 2); // BOTTOM
+            }
+
+
+            cam.LookAt(new Vector2(tempX, tempY));
            
 
             // projectiles
@@ -187,16 +266,15 @@ namespace RPG
             GraphicsDevice.Clear(Color.ForestGreen);
 
             // MAP
-            mapRenderer.Draw(myMap);
+            mapRenderer.Draw(myMap, cam.GetViewMatrix());
 
-            // PLAYER goes outside as begin/end exists in the anim.draw method
-            if (player.Health > 0) // is health is not 0 then draw player
+            spriteBatch.Begin(transformMatrix: cam.GetViewMatrix()); // transformMatrix: cam.GetViewMatrix() is for camera
+
+            // if health is not 0 then draw player
+            if (player.Health > 0) 
             {
                 player.anim.Draw(spriteBatch, new Vector2(player.Position.X - 48, player.Position.Y - 48));
-
             }
-
-            spriteBatch.Begin();
 
             //  ENEMIES
             foreach (Enemy en in Enemy.enemies) // foreach works with Lists
@@ -239,17 +317,19 @@ namespace RPG
                 spriteBatch.Draw(spriteToDraw, ob.Postition, Color.White);
                 
             }
-           
-           
+
+            spriteBatch.End();
+
+
+            // Hearts will stay in top corner 
+            spriteBatch.Begin();
 
             // draw health hearts based on player.Health
             for (int i = 0; i < player.Health; i++)
             {
-                spriteBatch.Draw(heart_Sprite, new Vector2(3+ i * 63, 3), Color.White); // Vector2(i * 63, 0) means a new heart is drawn in a different position
+                spriteBatch.Draw(heart_Sprite, new Vector2(3 + i * 63, 3), Color.White); // Vector2(i * 63, 0) means a new heart is drawn in a different position
             }
-
             spriteBatch.End();
-          
 
             base.Draw(gameTime);
         }

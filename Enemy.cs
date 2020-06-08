@@ -62,7 +62,7 @@ namespace RPG
         // Constructors
         public Snake(Vector2 newPos) : base(newPos) // this constructor inherits Enemy constructor
         {
-            speed = 90;
+            speed = 45;
             radius = 42; // for hit box
             health = 3;
         }
@@ -74,7 +74,7 @@ namespace RPG
         // Constructors
         public Eye(Vector2 newPos) : base(newPos)  // this constructor inherits Enemy constructor
         {
-            speed = 80;
+            speed = 30;
             radius = 45; // for hit box
             health = 5;
         }

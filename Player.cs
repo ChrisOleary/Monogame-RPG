@@ -55,7 +55,7 @@ namespace RPG
 
         // Methods
         // player movement
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, int mapW, int mapH) // int mapW, int mapH is for the right and bottom camera edges
         {
             KeyboardState kstate = Keyboard.GetState();
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -108,28 +108,28 @@ namespace RPG
                 {
                     case Dir.Down:
                         tempPos.Y += speed * dt; // put next move into variable and pass to Obstacle.didCollide
-                        if (!Obstacle.didCollide(tempPos, radius)) // if collision is NOT made
+                        if (!Obstacle.didCollide(tempPos, radius) && tempPos.Y < mapH) // if collision is NOT made and not at edge of screen
                         {
                             position.Y += speed * dt; // do the actual movement
                         }
                         break;
                     case Dir.Up:
                         tempPos.Y -= speed * dt;
-                        if (!Obstacle.didCollide(tempPos, radius))
+                        if (!Obstacle.didCollide(tempPos, radius) && tempPos.Y > 0)
                         {
                             position.Y -= speed * dt;
                         }
                         break;
                     case Dir.Left:
                         tempPos.X -= speed * dt;
-                        if (!Obstacle.didCollide(tempPos, radius))
+                        if (!Obstacle.didCollide(tempPos, radius) && tempPos.X > 0)
                         {
                             position.X -= speed * dt;
                         }
                         break;
                         case Dir.Right:
                         tempPos.X += speed * dt;
-                        if (!Obstacle.didCollide(tempPos, radius))
+                        if (!Obstacle.didCollide(tempPos, radius) && tempPos.X < mapW)
                         {
                             position.X += speed * dt;
                         }
@@ -143,6 +143,7 @@ namespace RPG
             if (kstate.IsKeyDown(Keys.Space) && kStateOld.IsKeyUp(Keys.Space))
             {
                 Projectile.projectiles.Add(new Projectile(position, direction));
+                MySounds.projectileSound.Play(1f, 0.5f, 0f);
             }
 
             kStateOld = kstate;

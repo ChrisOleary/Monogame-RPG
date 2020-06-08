@@ -163,3 +163,15 @@
 /processorParam:TextureFormat=Color
 /build:Player/playerUp.png
 
+#begin Sounds/blip.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/blip.wav
+
+#begin Sounds/original.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/original.ogg
+
